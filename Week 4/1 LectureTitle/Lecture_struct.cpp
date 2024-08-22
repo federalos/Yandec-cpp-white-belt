@@ -78,7 +78,7 @@ struct LectureTitle {
 */
 
 // Test 7 shouldn't work
-/*
+/* //
     LectureTitle title(
         Specialization("C++"),
         Week("4th"),
