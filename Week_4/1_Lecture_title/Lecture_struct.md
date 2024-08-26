@@ -1,3 +1,5 @@
+# Структура LectureTitle
+
 Дана структура LectureTitle:
 ```C++
 struct LectureTitle {

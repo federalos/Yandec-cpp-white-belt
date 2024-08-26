@@ -102,5 +102,5 @@ Date date(Day{10}, Month{11}, Year{12});
 
 
 # Домашние задания ( #HW )
-1. [[C++ Yandex White band/Week 4/1 LectureTitle/Структура LectureTitle|Структура LectureTitle]]
+1. [Структура LectureTitle](/Week_4/1_Lecture_title/Lecture_struct.md)
 2. 
