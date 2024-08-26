@@ -1,3 +1,5 @@
+# Деление
+
 Дано два целых числа A и B в диапазоне от 0 до 1 000 000 включительно. Напишите программу, которая вычисляет целую часть частного от деления A на B.
 
 Если B = 0, выведите "Impossible".
@@ -8,7 +10,4 @@
 | 10 2      | 5          |
 | 3 5       | 0          |
 | 11 0      | Impossible |
-
-[Исходный код программы](obsidian://open?vault=Allmind&file=C%2B%2B%20Yandex%20White%20band%2FWeek%201%2F1%20Division%2Fdivision.cpp)
-[Исполняемый файл](obsidian://open?vault=Allmind&file=C%2B%2B%20Yandex%20White%20band%2FWeek%201%2F1%20Division%2Fdivision.exe)
 
