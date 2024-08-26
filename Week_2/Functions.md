@@ -1,3 +1,5 @@
+# Функции и их применение
+
 Разделение кода на функции помогает в понимании: есть не целого слона, а по частям. Важно только именовать функции в соответствии с тем, что эта функция делает. 
 
 При правильной проектировки функции, можно будет в дальнейшем проще повторить этот кусок кода простым вызовом функции. Например, расчёт некоторой метрики на различных участках обработки данных
@@ -323,21 +325,21 @@ set<string> s(begin(v), end(v));
 - `set.count(var)` - подсчёт количества элементов `var` в множестве `set`. Но так как множество имеет только уникальные элементы, значит этот метод скорее используется для проверки "наличия" переменной `var` в множестве `set`.
 
 #  Домашние задания ( #HW )
-1. [[Факториал]]
-2. [[Палиндром]]
-3. [[C++ Yandex White band/Week 2/3 Polindrom part 2/Отбор палиндромов|Отбор палиндромов]]
-4. [[Максимизатор]]
-5. [[C++ Yandex White band/Week 2/5 String move/Перемещение строк |Перемещение строк]]
-6. [[Разворот последовательности]]
-7. [[C++ Yandex White band/Week 2/7 Reverse_2/Разворот последовательности 2|Разворот последовательности 2]]
-8. [[C++ Yandex White band/Week 2/8 Average Temperature/Средняя температура|Средняя температура]]
-9. [[C++ Yandex White band/Week 2/9 Queue/Очередь|Очередь]]
-10. [[C++ Yandex White band/Week 2/10 Daily Tasks/Ежемесячные дела|Ежемесячные дела]]
-11. [[C++ Yandex White band/Week 2/11 Anagramma/Анаграммы|Анаграммы]]
-12. [[C++ Yandex White band/Week 2/12 Capitals/Справочник столиц|Справочник столиц]]
-13. [[C++ Yandex White band/Week 2/13 Bus_stops/Автобусные остановки|Автобусные остановки]]
-14. [[C++ Yandex White band/Week 2/14 Bus_stops_2/Автобусные остановки 2|Автобусные остановки 2]]
-15. [[C++ Yandex White band/Week 2/15 Uniq_strings/Количество уникальных строк|Количество уникальных строк]]
-16. [[C++ Yandex White band/Week 2/16 BuildMapValuesSet/Множество значений словаря|Множество значений словаря]]
-17. [[C++ Yandex White band/Week 2/17 Synonyms/Синонимы|Синонимы]]
-18. [[C++ Yandex White band/Week 2/18 Bus_stops 3/Автобусные остановки 3|Автобусные остановки 3]]
+1. [Факториал](/Week_2/1_Factorial/factorial.md)
+2. [Палиндром](/Week_2/2_Palindrom/Palindrom.md)
+3. [Отбор палиндромов](/Week_2/3_Polindrom_2/PalindromeFilter.md)
+4. [Максимизатор](/Week_2/4_Min_value_changer/Min_Value_changer.md)
+5. [Перемещение строк](/Week_2/5_String_move/MoveString.md)
+6. [Разворот последовательности](/Week_2/6_Reverse/Reverse.md)
+7. [Разворот последовательности 2](/Week_2/7_Reverse_2/Reverse_2.md)
+8. [Средняя температура](/Week_2/8_Average_temperature/Average_Temp.md)
+9. [Очередь](/Week_2/9_Queue/Queue.md)
+10. [Ежемесячные дела](/Week_2/10_Daily_tasks/Daily.md)
+11. [Анаграммы](/Week_2/11_Anagramma/Anagramms.md)
+12. [Справочник столиц](/Week_2/12_Capitals/Capitals.md)
+13. [Автобусные остановки](/Week_2/13_Bus_stops/Bus_Stops.md)
+14. [Автобусные остановки 2](/Week_2/14_Bus_stops_2/Bus_Stops_2.md)
+15. [Количество уникальных строк](/Week_2/15_Uniq_strings/Uniq_strings.md)
+16. [Множество значений словаря](/Week_2/16_BuildMapValuesSet/Map_to_set_func.md)
+17. [Синонимы](/Week_2/17_Synonyms/Synonyms.md)
+18. [Автобусные остановки 3](/Week_2/18_Bus_stops_3/Bus_stops_3.md)
