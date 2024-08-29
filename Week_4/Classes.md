@@ -429,4 +429,6 @@ int main(){
 3. [Обратимая функция с умножением и делением](/Week_4/3_Reversible_Func_2/Reversible_Func_2.md)
 4. [Работа с файлами](/Week_4/4_Files/File_Tasks.md)
 5. [Вывод с точностью](/Week_4/5_Precision/Precision.md)
-6. [Чтение и вывод таблицы](/Week_4/6_Read_and_Write_Table/6_Read_and_Write_Table.md)
+6. [Чтение и вывод таблицы](/Week_4/6_Read_and_Write_Table/Read_and_Write_Table.md)
+7. [Список студентов](/Week_4/7_Students_List/Students_List.md)
+8. 
