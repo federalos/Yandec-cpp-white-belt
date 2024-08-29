@@ -420,7 +420,228 @@ int main(){
 
 ![alt text](/Week_4/Conspect_scripts/image-6.png)
 
+## Перегрузка операторов
 
+По умолчанию, нет особых проблем с такими операциями как ввод, вывод, сложение, вычитание и так далее. Но когда речь идёт про структуры и классы, некоторые операции могут быть немного иными, по сравнению с базовыми. И вот тут как раз и нужна перегразка операторов: грубо говоря "адаптирование и переопределение операций под нужды програмы и структ данных, использованных в программе". Рассмотрим пример: ввод и вывод времени:
+
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+struct Duration {
+    int hour;
+    int min;
+};
+Duration ReadDuration(istream& stream){
+    int h = 0;
+    int m = 0;
+    stream >> h;
+    stream.ignore(1);
+    stream >> m;
+    return Duration {h, m};
+}
+void PrintDuration(ostream& stream, const Duration& duration){
+    stream << setfill('0');
+    stream << setw(2) << duration.hour << ':' 
+           << setw(2) << duration.min;
+}
+int main (){
+    stringstream dur_ss("01:50");
+    Duration dur1 = ReadDuration(dur_ss);
+    PrintDuration(cout, dur1);
+    return 0;
+}
+```
+В коде выше, пока нет никаких перегрузок операторов, это стандартная работа с потоками. Но обсудим их немного подробнее и поэтапно. Есть структура `Duration`, тип данных, в которых будут поля с часами и минутами. Мы хотим из некоторого потока считать время и вывести в другом поток. Для этого можно завести отдельную функцию `ReadDuration()`, которая на вход будет принимать поток из которого мы хотим считать время (делается через ссылку на класс входного потока `istream`, то есть `istream&`). Пусть мы знаем, что время казывается в формате "число - разделитель - число". Какой разделитель нам не особо важно (`stream.ignore()` решит этот вопрос). Выход этой функции будет объявленная ранее структура с полями `hour` и `min`. 
+
+А теперь объявим функцию, которая будет выводить в поток время, которое будет храниться в нашей структуре. Этой функцией будет `PrintDuration()`. На вход она будет принимать ссылку на поток, куда мы хотим её вывести `ostream& stream`, а также экземпляр класса `const Duration& duration`. Внутри самой функции стандартизуем вывод: заполнение нулями там, где нет цифры, резервируем место и встраиваем разделитель между часами и минутами.
+
+И теперь посмотрим, как оно работает: вызове наши функции в `main()`. А теперь новый трюк: можно ввести поток, с помощью класса stringstream - это наш текущий поток (не путать с переменной). В принципе это равносильно тому, что мы запросили ввод через консоль и отдельно там прописали время "01:50". 
+
+В переменную `dur1` как структуру результат считывания из потока `dur_ss`. А вот печатать будем в консоль, то есть нашим потоком вывода будет как раз `cout`, а значит передаём первым аргументом именно этот поток.
+
+Но в рамках языка С++ можно не вызывать функции `ReadDuration()` и `PrintDuration()`, а обойтись более простыми решениями: операторами ввода (`>>`) и операторами вывода (`<<`). 
+
+Но сначала небольшое отступление. Рассмотрим операцию:
+```c++
+cout << "hello" << " world";
+```
+Банальная операция, но на деле мы имеем дело с укороченной записью вызовы оператора. Как это будет выглядеть в более полной форме:
+```c++
+operator<< (cout, "hello");
+```
+Есть глобальный оператор (`operator<<`), который на вход принимает поток, куда производить вывод, а вторым аргументом - набор символов для вывода. Если что, этот код рабочий, и вместо `<<` можно вызывать глобальный оператор (но не надо). А вот что он возвращает этот оператор? Возвращает сам поток, в который он делал вывод. А теперь как же работает изначальный пример:
+```c++
+operator<<(operator<<(cout, "hello"), " world");
+```
+
+Теперь мы знаем, что оператор должен вернуть сам поток. И вот теперь мы можем перегрузить оператор вывода и заменить функцию `PrintDuration()`, на вызов оператора `<<`. Аналогичную процедуру проделаем и для оператора ввода `>>` и функции `ReadDuration()`. И заметим, что сами функции нам более нужны, смело их заменяем операторами и тогда код будет выглядеть следующим образом:
+
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+struct Duration {
+    int hour;
+    int min;
+};
+
+istream& operator>>(istream& stream, Duration& duration){
+    stream >> duration.hour;
+    stream.ignore(1);
+    stream >> duration.min;
+    return stream;
+}
+
+ostream& operator<<(ostream& stream, const Duration& duration){
+    stream << setfill('0');
+    stream << setw(2) << duration.hour << ':' 
+           << setw(2) << duration.min;
+    return stream;
+}
+
+int main (){
+    stringstream dur_ss("01:50");
+    Duration dur1 {0, 0};
+    dur_ss >> dur1;
+    cout << dur1 << endl;
+    return 0;
+}
+```
+
+По логике программы, блоки остались теми же, но ввод и вывод стал более простым для нас. Более того, не нужны дополнительные вспомогательные переменные `h` и `m`, которые были у нас в функции `ReadDuration()`.
+
+Так перегружать можно не только ввод и вывод, но и другие операторы. Например сложение, вычитание и прочие. Модифируем пример кода выше:
+Во-первых, стоит для начала обновить структуру, добавить конструктор и пересчёт в минуты и часы (чтобы не было 0 часов 70 минут, а было 1 час и 10 минут). Сделаем это через "общее время в минутах", `total`, а затем будем смотреть целое от деление на 60 и остаток от деления. И определим оператор сложения `+` для нашей структуры для того, чтобы мы могли складывать 2 структуры:
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+struct Duration {
+    int hour;
+    int min;
+
+    Duration (int h = 0, int m = 0){
+        int total = h*60 + m;
+        hour = total / 60;
+        min = total % 60;
+    }
+};
+
+Duration operator+(const Duration& lhs, const Duration& rhs){
+    return Duration(lhs.hour + rhs.hour, lhs.min + rhs.min);
+}
+
+istream& operator>>(istream& stream, Duration& duration){
+    stream >> duration.hour;
+    stream.ignore(1);
+    stream >> duration.min;
+    return stream;
+}
+
+ostream& operator<<(ostream& stream, const Duration& duration){
+    stream << setfill('0');
+    stream << setw(2) << duration.hour << ':' 
+           << setw(2) << duration.min;
+    return stream;
+}
+
+int main (){
+    stringstream dur_ss("01:50");
+    Duration dur1 {0, 0};
+    dur_ss >> dur1;
+    cout << dur1 << endl;
+    return 0;
+}
+```
+
+Очевидно, что если мы проводим операцию над структурой: складываем 2 структуры, то и результат будет та же структура, а значит оператор будет возвращать структуру `Duration`, где мы опеределили, что сначала складываем часы, а потом складываем минуты.
+
+А теперь, допустим, хотим воспользоваться функцией `sort()`, но для неё же должна быть опеределена операция сравнения `<`. Если мы сходу захотим упорядочить вектор из нескольких структур типа `Duration`, компилятор выдаст ошибку, так как сравнение не определено. И снова, мы можем глобально перегрузить оператор нашим прописанным сравнением и тогда функция `sort()` будет оперировать дополненными инструкциями. Вот пример кода:
+
+```c++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+struct Duration {
+    int hour;
+    int min;
+
+    Duration (int h = 0, int m = 0){
+        int total = h*60 + m;
+        hour = total / 60;
+        min = total % 60;
+    }
+};
+
+Duration operator+(const Duration& lhs, const Duration& rhs){
+    return Duration(lhs.hour + rhs.hour, lhs.min + rhs.min);
+}
+
+bool operator<(const Duration& lhs, const Duration& rhs){
+    if (lhs.hour == rhs.hour){
+        return lhs.min < rhs.min;
+    }
+    return lhs.hour < rhs.hour;
+}
+
+istream& operator>>(istream& stream, Duration& duration){
+    stream >> duration.hour;
+    stream.ignore(1);
+    stream >> duration.min;
+    return stream;
+}
+
+ostream& operator<<(ostream& stream, const Duration& duration){
+    stream << setfill('0');
+    stream << setw(2) << duration.hour << ':' 
+           << setw(2) << duration.min;
+    return stream;
+}
+
+void PrintVector(const vector<Duration>& durs){
+    for (const auto& d:durs){
+        cout << d << ' ';
+    }
+    cout << endl;
+}
+
+int main (){
+    stringstream dur_ss("02:50");
+    Duration dur1;
+    dur_ss >> dur1;
+    Duration dur2 = {0, 35};
+    Duration dur3 = dur1 + dur2;
+    vector<Duration> v{dur3, dur1, dur2};
+    PrintVector(v);
+    sort(begin(v), end(v));
+    PrintVector(v);
+    return 0;
+}
+```
+
+Вывод будет следующим:
+![alt text](/Week_4/Conspect_scripts/image-7.png)
 
 
 ## Домашние задания ( #HW )

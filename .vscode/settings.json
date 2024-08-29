@@ -6,6 +6,9 @@
         "*.tcc": "cpp",
         "string_view": "cpp",
         "typeinfo": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "iosfwd": "cpp",
+        "random": "cpp",
+        "limits": "cpp"
     }
 }
