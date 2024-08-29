@@ -641,6 +641,8 @@ int main (){
 ```
 
 Вывод будет следующим:
+
+
 ![alt text](/Week_4/Conspect_scripts/image-7.png)
 
 
