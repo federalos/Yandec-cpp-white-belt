@@ -9,6 +9,16 @@
         "ostream": "cpp",
         "iosfwd": "cpp",
         "random": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "functional": "cpp",
+        "compare": "cpp",
+        "memory_resource": "cpp",
+        "type_traits": "cpp",
+        "stdexcept": "cpp",
+        "exception": "cpp",
+        "sstream": "cpp",
+        "optional": "cpp",
+        "numbers": "cpp",
+        "system_error": "cpp"
     }
 }

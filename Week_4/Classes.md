@@ -646,6 +646,184 @@ int main (){
 ![alt text](/Week_4/Conspect_scripts/image-7.png)
 
 
+## Исключения
+
+Это инструмент встроенные в С++ для отработки каких-то ошибок, некоретнных аргументов функций и так далее. По факту, всегда нужно контролировать, например, ввод с потока: насколько он соответствует тому, что мы ожидали. А если он не соответствует, то выдать какую-то детализированную ошибку (логировать ошибко). И вот рассмотрим пример:
+
+Пусть у нас есть структура с датой (`Date`) и есть парсер `ParseDate()` этой даты из потока в соответствии с поля `Date`:
+
+```C++
+#include <sstream>
+#include <iomanip>
+#include <exception>
+#include <iostream>
+
+using namespace std;
+
+struct Date{
+    int year;
+    int month;
+    int day;
+};
+
+Date ParseDate(const string& s){
+    stringstream stream(s); // объявление строкового потока, с которым далее работаем
+    Date date;
+    stream >> date.year;
+    stream.ignore(1);
+    stream >> date.month;
+    stream.ignore(1);
+    stream >> date.day;
+    return date;
+}
+
+int main(){
+    string date_str = "2017/01/25";
+    Date date = ParseDate(date_str);
+    cout << setw(2) << setfill('0') << date.day << '.'
+         << setw(2) << setfill('0') << date.month << '.'
+         << setw(2) << setfill('0') << date.year << endl;
+    return 0;
+}
+```
+Вывод будет выглядеть следующим образом:
+
+![alt text](/Week_4/Conspect_scripts/image-8.png)
+
+В таком случае у нас просто будет игнорироваться разделитель и не важно какой символ будет:
+
+"2017/01/25" или "2017a01b25"
+
+А такие вещи стоит контролировать в коде и давать знать пользователю, что пошло не так. Чтобы он смог скорретировать входные данные, например.
+
+Самое очевидное решение - это вводить проверки на символы на стадии парсинга даты: соответвуют ли символы на позициях ожидаемым. Это можно сделать с помощью метода для потока `peek()` - подглядеть следующий символ, но не совсем считать его. Но тогда придётся менять сигнатуру функции и её входы: на вход подавать структуру `Date`, а выход преобразуется в `bool` - флаг того, что удало ли распарсить дату или нет. И всё это не очень удобно, особенно в масштабных проектах. Для таких задач лучше воспользовать "отловом исключений". 
+
+Первое что стоит ввести:
+```c++
+ throw exception()
+ ``` 
+ То есть, выбрось в специальный класс exception в вызывающий код `main()`, что что-то пошло не так. Но для полноценной отлова ошибки этого недостаточно, так как нужна конструкция куда выбрасываться в случае ошибки: `try-catch`:
+
+ ```c++
+try{
+	// Код, который проверяется на исключения / код, который может выдать ошибку
+} catch (exception&){ // Класс, который будет ловиться при ошибке 
+	// Отработчик ошибки
+}
+
+```
+
+Пример того, как это может отрабатываться дан ниже:
+
+```c++
+#include <sstream>
+#include <iomanip>
+#include <exception>
+#include <iostream>
+
+using namespace std;
+
+struct Date{
+    int year;
+    int month;
+    int day;
+};
+
+void EnsureNextSymbolAndSkip(stringstream& stream){
+    if (stream.peek() != '/'){
+        throw exception();
+    }
+    stream.ignore(1);
+}
+
+Date ParseDate(const string& s){
+    stringstream stream(s); // объявление строкового потока, с которым далее работаем
+    Date date;
+    stream >> date.year;
+    EnsureNextSymbolAndSkip(stream);
+    stream >> date.month;
+    EnsureNextSymbolAndSkip(stream);
+    stream >> date.day;
+    return date;
+}
+
+int main(){
+    string date_str = "2017a01b25";
+    try{
+        Date date = ParseDate(date_str);
+        cout << setw(2) << setfill('0') << date.day << '.'
+             << setw(2) << setfill('0') << date.month << '.'
+             << setw(2) << setfill('0') << date.year << endl;
+    }
+    catch(exception& ex)
+    {
+        cout << "exception happens" << endl;
+    }
+    return 0;
+}
+```
+В таком случае консоль выдаст следующее сообщение:
+
+![alt text](/Week_4/Conspect_scripts/image-9.png)
+
+Но есть возможность не только отловить какие-то ошибки, но и сообщить, что пошло не так при исполнении программы. И в `exception` можно как раз записать, что же пошло не так. Для этого есть `runtime_error`, где и будет храниться инфа об ошибке
+
+```c++
+#include <sstream>
+#include <iomanip>
+#include <exception>
+#include <iostream>
+
+using namespace std;
+
+struct Date{
+    int year;
+    int month;
+    int day;
+};
+
+void EnsureNextSymbolAndSkip(stringstream& stream){
+    if (stream.peek() != '/'){
+        stringstream ss;
+        ss << "expected /, but has: " << char(stream.peek());
+        throw runtime_error(ss.str());
+    }
+    stream.ignore(1);
+}
+
+Date ParseDate(const string& s){
+    stringstream stream(s); // объявление строкового потока, с которым далее работаем
+    Date date;
+    stream >> date.year;
+    EnsureNextSymbolAndSkip(stream);
+    stream >> date.month;
+    EnsureNextSymbolAndSkip(stream);
+    stream >> date.day;
+    return date;
+}
+
+int main(){
+    string date_str = "2017a01b25";
+    try{
+        Date date = ParseDate(date_str);
+        cout << setw(2) << setfill('0') << date.day << '.'
+             << setw(2) << setfill('0') << date.month << '.'
+             << setw(2) << setfill('0') << date.year << endl;
+    }
+    catch(exception& ex)
+    {
+        cout << "exception happens: " << ex.what() << endl;
+    }
+    return 0;
+}
+```
+
+Вывод уже такой программы будет более информативным:
+
+![alt text](/Week_4/Conspect_scripts/image-10.png)
+
+Здесь метод `what()` класса `ex` содержит в себе текст ошибки, которую ранее мы записали с помощью строчки `throw runtime_error(ss.str())`
+
 ## Домашние задания ( #HW )
 1. [Структура LectureTitle](/Week_4/1_Lecture_title/Lecture_struct.md)
 2. [Обратимая функция](/Week_4/2_Reversible_Func/Reversible_Func.md)
@@ -654,4 +832,9 @@ int main (){
 5. [Вывод с точностью](/Week_4/5_Precision/Precision.md)
 6. [Чтение и вывод таблицы](/Week_4/6_Read_and_Write_Table/Read_and_Write_Table.md)
 7. [Список студентов](/Week_4/7_Students_List/Students_List.md)
-8. 
+8. [Класс Rational](/Week_4/8_Rational/Rational.md)
+9. [Функция EnsureEqual](/Week_4/9_EnsureEqual/EnsureEqual.md)
+10. [Исключения в классе Rational](/Week_4/10_Exception_Rational/Exception_Rational.md)
+11. [Калькулятор обыкновенных дробей](/Week_4/11_Frac_calc/frac_calc.md)
+12. [Работа с сервером времени](/Week_4/12_Server_Time/Server_Time.md)
+

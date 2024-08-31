@@ -13,6 +13,10 @@ int main(){
             b = b % a;
         }
     }
+// debug stuff
+//    cout << "a " << a << endl;
+//    cout << "b " << b << endl;
+
     cout << a + b;
     return 0;
 }
