@@ -19,6 +19,8 @@
         "sstream": "cpp",
         "optional": "cpp",
         "numbers": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "string": "cpp",
+        "fstream": "cpp"
     }
 }
